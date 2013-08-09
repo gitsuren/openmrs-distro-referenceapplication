@@ -32,7 +32,8 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
-config.vm.synced_folder ".", "/vagrant", :extra => "dmode=755,fmode=755"
+  config.vm.synced_folder ".", "/vagrant", :extra => "dmode=755,fmode=755"
+
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -72,28 +73,33 @@ config.vm.synced_folder ".", "/vagrant", :extra => "dmode=755,fmode=755"
     puppet.manifest_file  = "site.pp"
     puppet.module_path    = "puppet/modules"
   end
-config.vm.provision :shell do |shell|
-shell.inline = 'cd /vagrant/ && ./create-db.sh'
-end
-config.vm.provision :shell do |shell|
-shell.inline = 'cd /vagrant/ && mvn generate-resources -P setupdatabase'
-end
 
-config.vm.provision :shell do |shell|
-shell.inline = 'cd /vagrant/packaging/ && ./debian-build.sh'
-end
-config.vm.provision :shell do |shell|
-shell.inline = 'if [ -e /vagrant/packaging/target/openmrs-.deb ]; then sudo dpkg -i /vagrant/packaging/target/openmrs-.deb; fi'
-end
-config.vm.provision :puppet do |puppet|
-puppet.manifests_path = "puppet/manifests"
-puppet.manifest_file  = "site.pp"
-puppet.module_path    = "puppet/modules"
-puppet.options        = "-e 'include refapp'"
-end
-config.vm.provision :shell do |shell|
-shell.inline = 'cd /vagrant/ && ./appStartupCheck.sh'
-end
+  config.vm.provision :shell do |shell|
+    shell.inline = 'cd /vagrant/ && ./create-db.sh'
+  end
+
+  config.vm.provision :shell do |shell|
+    shell.inline = 'cd /vagrant/ && mvn generate-resources -P setupdatabase'
+  end
+
+  config.vm.provision :shell do |shell|
+    shell.inline = 'cd /vagrant/packaging/ && ./debian-build.sh'
+  end
+
+  config.vm.provision :shell do |shell|
+    shell.inline = 'if [ -e /vagrant/packaging/target/openmrs-.deb ]; then sudo dpkg -i /vagrant/packaging/target/openmrs-.deb; fi'
+  end
+
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = "puppet/manifests"
+    puppet.manifest_file  = "site.pp"
+    puppet.module_path    = "puppet/modules"
+    puppet.options        = "-e 'include refapp'"
+  end
+
+  config.vm.provision :shell do |shell|
+    shell.inline = 'cd /vagrant/ && ./appStartupCheck.sh'
+  end
 
 
 
